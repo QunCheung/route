@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cxzx.bdyx.com.retrofitutild">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" /><!--蓝牙管理-->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /><!--蓝牙操作权限-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /><!--在有些机型上需要获取位置信息才能扫描到蓝牙设备，此权限在api23+需要动态申请-->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" /> <!--表示此app只支持拥有BLE的设备上运行-->
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".BaseActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!--android N 的文件共享机制-->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="cxzx.bdyx.com.retrofitutild.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>
