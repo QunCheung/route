@@ -1,2 +1,6 @@
 android 基础框架.
-集成或封装基础功能
+costom_view 自定义控件
+date_api    与服务器交互
+date_base   android本地数据交互
+frame_work  android本地硬件交互
+web         android与h5交互

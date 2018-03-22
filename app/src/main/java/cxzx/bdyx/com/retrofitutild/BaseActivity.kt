@@ -4,12 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-import cxzx.bdyx.com.retrofitutild.permission_utils.PermissionInterface
-import cxzx.bdyx.com.retrofitutild.retrofit_utils.api_test.ApiTest
-import cxzx.bdyx.com.retrofitutild.retrofit_utils.call_back.SubscriberCallBack
-import cxzx.bdyx.com.retrofitutild.retrofit_utils.retrofit_instance.RetrofitInstance
-import cxzx.bdyx.com.retrofitutild.tools_utils.bluetooth.BlueToothUtils
-import cxzx.bdyx.com.retrofitutild.tools_utils.camera.CameraUtils
+import cxzx.bdyx.com.retrofitutild.frame_work.permission_utils.PermissionInterface
+import cxzx.bdyx.com.retrofitutild.date_api.retrofit_utils.api_test.ApiTest
+import cxzx.bdyx.com.retrofitutild.date_api.retrofit_utils.call_back.SubscriberCallBack
+import cxzx.bdyx.com.retrofitutild.date_api.retrofit_utils.retrofit_instance.RetrofitInstance
+import cxzx.bdyx.com.retrofitutild.frame_work.tools_utils.bluetooth.BlueToothUtils
+import cxzx.bdyx.com.retrofitutild.frame_work.tools_utils.camera.CameraUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
 class BaseActivity : AppCompatActivity(), PermissionInterface {
