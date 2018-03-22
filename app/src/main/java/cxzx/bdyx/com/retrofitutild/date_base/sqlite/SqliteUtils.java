@@ -5,4 +5,5 @@ package cxzx.bdyx.com.retrofitutild.date_base.sqlite;
  */
 
 public class SqliteUtils{
+
 }
