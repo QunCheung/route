@@ -26,11 +26,11 @@ import cxzx.bdyx.com.retrofitutild.SocketAidl;
 public class AidlService extends Service{
 
     private static final String TAG = "BMS";
-
+    //存client(Activity)传递过来的信息
     private List<String> messageList = new ArrayList<>();
-
+    //aidl回调list
     private RemoteCallbackList<Socket2Message> listenerList = new RemoteCallbackList<>();
-
+    //aidl接口生成的binder
     private Binder binder = new SocketAidl.Stub() {
         @Override
         public void sendMessage(int type,String message) throws RemoteException {
@@ -69,7 +69,9 @@ public class AidlService extends Service{
             listenerList.unregister(listener);
         }
     };
+    //socket对象
     private Socket tcpClient;
+    //socket地址对象
     private InetSocketAddress socAddress;
 
     @Nullable
@@ -84,12 +86,18 @@ public class AidlService extends Service{
         new Thread(new Th()).start();
     }
 
+    /**
+     * 回收list
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
         listenerList.kill();
     }
 
+    /**
+     * 测试aidl正常工作,从service传递信息到Activity
+     */
     class Th implements Runnable{
 
         @Override
@@ -107,6 +115,10 @@ public class AidlService extends Service{
         }
     }
 
+    /**
+     * 通过aidl传递信息到activity
+     * @param msg
+     */
     private void sendMsg2Client(String msg) {
         messageList.add(msg);
         int N = listenerList.beginBroadcast();
@@ -129,7 +141,7 @@ public class AidlService extends Service{
      * @throws IOException
      * @throws InterruptedException
      */
-    private void socketConnect() throws RemoteException, IOException, InterruptedException {
+    private void socketConnect() throws IOException, InterruptedException {
         if (null == tcpClient)
             tcpClient = new Socket();
         if (tcpClient.isConnected()){
@@ -139,6 +151,10 @@ public class AidlService extends Service{
             tcpClient.connect(socAddress, 1000);//1秒超时
             if (tcpClient.isConnected()){
                 sendMsg2Client("connect success");
+                //监听socket的信息或者心跳包
+                beginObsSocketService();
+                //发送心跳包
+                keepSocketConnect();
             }else{
                 sendMsg2Client("connect failed , and 2 second late will reconnected");
                 Thread.sleep(2000);
@@ -148,12 +164,47 @@ public class AidlService extends Service{
     }
 
     /**
+     * 定时发送心跳包
+     */
+    private void keepSocketConnect() {
+        //todo 改线程需要优化
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    try {
+                        Thread.sleep(20000);
+                        sendMessageBySocket("heart".getBytes());
+                    }catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 开启监听socketservice的线程
+     */
+    private void beginObsSocketService() {
+        //todo 线程需要优化
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    obsSocketMessage();
+                }
+            }
+        }).start();
+    }
+
+    /**
      * 通过socket发送消息给service
      * @param bytes
      * @throws RemoteException
      */
-    private void sendMessageBySocket(byte[] bytes) throws RemoteException {
-        if (!tcpClient.isConnected()){
+    private void sendMessageBySocket(byte[] bytes){
+        if (null == tcpClient || !tcpClient.isConnected()){
             sendMsg2Client("send msg failed , socket is disconnected !");
             return;
         }
@@ -173,10 +224,14 @@ public class AidlService extends Service{
      * 读取socket返回的数据
      */
     private void obsSocketMessage(){
+        if (null == tcpClient || !tcpClient.isConnected()){
+            sendMsg2Client("socket is not connect !");
+            return;
+        }
         //定义长度很大的数组,用来存储socket传过来的数据.
         byte[] byteArrayIn = new byte[1400];
         // 接收数据
-        // message heander 长度
+        // message head 长度
         int headerLen = 0;
         try {
             headerLen = tcpClient.getInputStream().read(byteArrayIn, 0, 1);
@@ -188,7 +243,6 @@ public class AidlService extends Service{
             int pos = 1;
             while (true) {
                 tcpClient.getInputStream().read(byteArrayIn, pos++, 1);
-                // log.info("read " +NumberUtil.byteArrToHexStr(mybyte));
                 // 处理连包时，上一包只有后半部分，和新包连在一起的情况。上半包全丢弃，从下一个完整包开始
                 if (byteArrayIn[1] == 0x7E) {
                     pos--;
@@ -198,16 +252,12 @@ public class AidlService extends Service{
                     break;
             }
             int bytesLen = pos;
-            //    bytesLen = TCPClient.tcpClient.getInputStream().read(byteArrayIn);
             // 以上接收信息,一下信息处理
             if (bytesLen > 0) {
-//                App.tcpObject.icut = 0;
-                //将接收到的消息处理为message对象
-//                T808Message message = new T808Message();
                 byte[] bytes = new byte[bytesLen];
                 System.arraycopy(byteArrayIn, 0, bytes, 0, bytesLen);
-                //解析字节数据转换成808协议类
-//                message.readFromBytes(bytes);
+                //todo 发送字节,可以先做处理
+                sendMsg2Client(bytes.toString());
             }else{
                 try {
                     Thread.sleep(100);
