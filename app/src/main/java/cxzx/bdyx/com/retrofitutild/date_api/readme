@@ -1,1 +1,2 @@
-与服务器交互工具
+retrofit_utils -->http或者https的网络请求封装,处理
+tcp_ip   -->socket + service +aidl 详情参考BaseActivity
