@@ -18,13 +18,14 @@ import cxzx.bdyx.com.retrofitutild.frame_work.tools_utils.bluetooth.BlueToothUti
 import cxzx.bdyx.com.retrofitutild.frame_work.tools_utils.camera.CameraUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
-class BaseActivity : AppCompatActivity(), PermissionInterface {
+class SocketClientActivity : AppCompatActivity(), PermissionInterface {
 
     val TAG:String = "activity"
     private var handler:Handler = object : Handler() {
         override fun handleMessage(msg: Message?) {
             if (msg!!.what == 0){
                 Log.i(TAG, msg.obj as String?)
+                tv.setText(msg.obj as String)
             }
             super.handleMessage(msg)
         }
@@ -32,6 +33,7 @@ class BaseActivity : AppCompatActivity(), PermissionInterface {
 
     private var listener:Socket2Message = object : Socket2Message.Stub() {
         override fun onNewMessageArrive(message: String?) {
+            //此处回调的消息是异步的,需要handler带入UI线程
             handler.obtainMessage(0,message).sendToTarget()
         }
     }
@@ -81,6 +83,8 @@ class BaseActivity : AppCompatActivity(), PermissionInterface {
         bluetooth.onActivityRequest(requestCode,resultCode,data)
     }
     override fun onDestroy() {
+        messageManager!!.unregisterListener(listener)
+        messageManager = null
         super.onDestroy()
     }
 

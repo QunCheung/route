@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cxzx.bdyx.com.retrofitutild.BaseActivity">
+    tools:context="cxzx.bdyx.com.retrofitutild.SocketClientActivity">
 
     <TextView
         android:id="@+id/tv"
