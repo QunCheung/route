@@ -1,5 +1,9 @@
 package cxzx.bdyx.com.retrofitutild.date_api.retrofit_utils.retrofit_instance
 
+import cxzx.bdyx.com.retrofitutild.date_api.retrofit_utils.https_utils.SSLUtils
+import cxzx.bdyx.com.retrofitutild.date_api.retrofit_utils.https_utils.Tls12SocketFactory
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -7,6 +11,10 @@ import rx.Observable
 import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.security.KeyManagementException
+import java.security.NoSuchAlgorithmException
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
 
 /**
  * Created by QunCheung on 2018/3/13.
@@ -27,6 +35,8 @@ object RetrofitInstance{
         return instance
     }
 
+    private val INTERNET_REQUEST_TIME: Long = 120000
+
     /**
      * 获取不同BaseUrl地址下的Retrofit实例
      */
@@ -34,10 +44,34 @@ object RetrofitInstance{
         if (retrofits.containsKey(baseUrl)){
             return retrofits.getValue(baseUrl)
         }else{
+            val logging = HttpLoggingInterceptor()
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY)
+            //配置SSL
+            var sslContext: SSLContext? = null
+            try {
+                sslContext = SSLContext.getInstance("TLS")
+                try {
+                    sslContext!!.init(null, null, null)
+                } catch (e: KeyManagementException) {
+                    e.printStackTrace()
+                }
+
+            } catch (e: NoSuchAlgorithmException) {
+                e.printStackTrace()
+            }
+
+            val socketFactory = Tls12SocketFactory(sslContext!!.socketFactory)
+            val okHttpClient = OkHttpClient.Builder()
+                    .readTimeout(INTERNET_REQUEST_TIME, TimeUnit.MILLISECONDS)
+                    .connectTimeout(INTERNET_REQUEST_TIME, TimeUnit.MILLISECONDS)
+                    .addInterceptor(logging)
+                    .sslSocketFactory(socketFactory, SSLUtils.UnSafeTrustManager())
+                    .build()
             //此处可添加log拦截器等自定义功能
             var retrofit:Retrofit = Retrofit.Builder()
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .client(okHttpClient)
                     .baseUrl(baseUrl)
                     .build()
             retrofits.put(baseUrl,retrofit)

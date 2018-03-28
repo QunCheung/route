@@ -5,4 +5,7 @@ package cxzx.bdyx.com.retrofitutild.costom_view;
  */
 
 public class A {
+
+    private boolean can;
+
 }
