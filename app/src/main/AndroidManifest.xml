@@ -39,6 +39,11 @@
                 <action android:name="re_service"/>
             </intent-filter>
         </service>
+
+        <activity android:name=".date_base.breadcast.BreadCastReceiverActivity">
+         </activity>
+
+
     </application>
 
 </manifest>
