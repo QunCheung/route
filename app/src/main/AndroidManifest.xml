@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cxzx.bdyx.com.retrofitutild">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.BLUETOOTH" /><!--蓝牙管理-->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /><!--蓝牙操作权限-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /><!--在有些机型上需要获取位置信息才能扫描到蓝牙设备，此权限在api23+需要动态申请-->
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" /> <!--表示此app只支持拥有BLE的设备上运行-->
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- 蓝牙管理 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 蓝牙操作权限 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 在有些机型上需要获取位置信息才能扫描到蓝牙设备，此权限在api23+需要动态申请 -->
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
+    <!-- 表示此app只支持拥有BLE的设备上运行 -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -33,17 +38,19 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <service android:name=".date_api.tcp_ip.AidlService"
+
+        <service
+            android:name=".date_api.tcp_ip.AidlService"
             android:process=":remote">
-            <intent-filter>
-                <action android:name="re_service"/>
+            <intent-filter android:priority="1000">
+                <action android:name="re_service" />
             </intent-filter>
         </service>
-
         <activity android:name=".date_base.breadcast.BreadCastReceiverActivity">
-         </activity>
-
-
+        </activity>        <activity
+            android:name=".BlueToothActivity"
+            android:label="@string/title_activity_blue_tooth"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

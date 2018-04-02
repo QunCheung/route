@@ -18,14 +18,14 @@ import cxzx.bdyx.com.retrofitutild.frame_work.tools_utils.bluetooth.BlueToothUti
 import cxzx.bdyx.com.retrofitutild.frame_work.tools_utils.camera.CameraUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
-class SocketClientActivity : AppCompatActivity(), PermissionInterface {
+abstract class SocketClientActivity : AppCompatActivity(), PermissionInterface {
 
     val TAG:String = "activity"
     private var handler:Handler = object : Handler() {
         override fun handleMessage(msg: Message?) {
             if (msg!!.what == 0){
                 Log.i(TAG, msg.obj as String?)
-                tv.setText(msg.obj as String)
+                tv.setText(msg.obj as String?)
             }
             super.handleMessage(msg)
         }
@@ -41,7 +41,7 @@ class SocketClientActivity : AppCompatActivity(), PermissionInterface {
     private var messageManager: SocketAidl? = null
     var conn = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
-
+            //messageManager!!.unregisterListener(listener)
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -65,14 +65,22 @@ class SocketClientActivity : AppCompatActivity(), PermissionInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var intent = Intent()
-        intent.action = "re_service"
-        intent.`package` = "cxzx.bdyx.com.retrofitutild"
-        bindService(intent,conn,Context.BIND_AUTO_CREATE)
-        tv.setOnClickListener(View.OnClickListener {
-            messageManager!!.sendMessage(SocketConstant.SEND_MSG,""+count++)
+        btn_bind.setOnClickListener(View.OnClickListener {
+            var intent = Intent()
+            intent.action = "re_service"
+            intent.`package` = "cxzx.bdyx.com.retrofitutild"
+            bindService(intent,conn,Context.BIND_AUTO_CREATE)
+        })
+        btn_stop.setOnClickListener(View.OnClickListener {
+            unbindService(conn)
+        })
+        btn_send.setOnClickListener(View.OnClickListener {
+            if (null != messageManager){
+                messageManager!!.sendMessage(SocketConstant.SEND_MSG,""+count++)
+            }
         })
     }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         bluetooth.onPermissionResult(requestCode,permissions,grantResults)

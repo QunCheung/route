@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RetrofitUtild</string>
+    <string name="title_activity_blue_tooth">BlueToothActivity</string>
 </resources>
